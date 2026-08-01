@@ -1,4 +1,5 @@
 import os
+import traceback
 import markdown
 import config
 from services.duplicate_service import is_duplicate
