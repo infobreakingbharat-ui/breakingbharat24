@@ -198,14 +198,41 @@ for i, article in enumerate(news, start=1):
 
     print("\nGenerating Tags...")
 
-    tags = generate_tags(rewritten)
+    try:
+        print("\nGenerating Tags...")
+        tags = generate_tags(rewritten)
+
+        print("=" * 60)
+        print(tags)
+        print("=" * 60)
+
+    except Exception as e:
+        print("=" * 60)
+        print("TAG ERROR")
+        print("=" * 60)
+        print(e)
+        traceback.print_exc()
+        raise
     print("=" * 60)
     print("TAGS")
     print(tags)
     print("=" * 60)
     print("\nGenerating Image Prompt...")
 
-    image_prompt = generate_image_prompt(rewritten)
+    try:
+        print("\nGenerating Image Prompt...")
+
+        image_prompt = generate_image_prompt(rewritten)
+
+        print(image_prompt)
+
+    except Exception as e:
+        print("=" * 60)
+        print("IMAGE PROMPT ERROR")
+        print("=" * 60)
+        print(e)
+        traceback.print_exc()
+        raise
 
     print(image_prompt)
 
