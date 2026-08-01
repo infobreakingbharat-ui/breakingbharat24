@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+images/output/
+database/news.db
+.vscode/
