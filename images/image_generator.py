@@ -13,7 +13,10 @@ def generate_image(prompt, filename="featured.jpg"):
     print("Generating AI Image...")
     print("=" * 60)
 
-    url = f"https://image.pollinations.ai/prompt/{quote(prompt)}"
+    url = (
+        f"https://image.pollinations.ai/prompt/{quote(prompt)}"
+        "?width=1920&height=1080"
+    )
 
     print("Image URL:")
     print(url)
