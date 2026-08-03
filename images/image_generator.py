@@ -9,25 +9,58 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def generate_image(prompt, filename="featured.jpg"):
 
+    print("=" * 60)
     print("Generating AI Image...")
+    print("=" * 60)
 
     url = f"https://image.pollinations.ai/prompt/{quote(prompt)}"
 
-    response = requests.get(url, timeout=120)
+    print("Image URL:")
+    print(url)
 
-    if response.status_code != 200:
-        print("Image Generation Failed")
+    headers = {
+        "User-Agent": "BreakingBharatBot/1.0"
+    }
+
+    try:
+
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=180
+        )
+
+        print("Status Code:", response.status_code)
+
+        content_type = response.headers.get("Content-Type")
+        print("Content-Type:", content_type)
+
+        if response.status_code != 200:
+            print("Image Generation Failed")
+            print(response.text[:1000])
+            return None
+
+        if not content_type or "image" not in content_type.lower():
+            print("Response is not an image")
+            print(response.text[:1000])
+            return None
+
+        image_path = os.path.join(OUTPUT_DIR, filename)
+
+        with open(image_path, "wb") as f:
+            f.write(response.content)
+
+        print("Image Saved Successfully")
+        print("Saved At:", image_path)
+
+        return image_path
+
+    except Exception as e:
+        print("=" * 60)
+        print("IMAGE GENERATION ERROR")
+        print("=" * 60)
+        print(e)
         return None
-
-    image_path = os.path.join(OUTPUT_DIR, filename)
-
-    with open(image_path, "wb") as f:
-        f.write(response.content)
-
-    print("Image Saved Successfully")
-
-    return image_path
-
 
 if __name__ == "__main__":
 
@@ -44,4 +77,4 @@ if __name__ == "__main__":
 
     path = generate_image(prompt)
 
-    print(path)
+    print("Returned Path:", path)
