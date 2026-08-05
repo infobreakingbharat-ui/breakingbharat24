@@ -15,6 +15,7 @@ from services.news_service import save_news
 from resolver.url_resolver import resolve_url
 from extractor.article_extractor import extract_article
 from images.image_prompt import generate_image_prompt
+from images.pexels_image import download_pexels_image
 from images.image_generator import generate_image
 from services.rewrite_service import rewrite_article
 from seo.seo_generator import generate_seo
@@ -278,13 +279,31 @@ for i, article in enumerate(news, start=1):
 
     print(image_prompt)
 
-    print("\nGenerating AI Image...")
+    print("\nDownloading image from Pexels...")
 
     try:
 
-        image_path = generate_image(image_prompt)
+        image_path = download_pexels_image(seo["title"])
+
+        if image_path is None:
+
+            print("Pexels image not found.")
+
+            print("Trying AI image...")
+
+            image_path = generate_image(image_prompt)
 
     except Exception as e:
+
+        print("=" * 60)
+        print("IMAGE ERROR")
+        print("=" * 60)
+
+        print(e)
+
+        traceback.print_exc()
+
+        continue
 
         print("=" * 60)
         print("IMAGE GENERATION ERROR")
