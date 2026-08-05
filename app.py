@@ -288,10 +288,13 @@ for i, article in enumerate(news, start=1):
         if image_path is None:
 
             print("Pexels image not found.")
-
             print("Trying AI image...")
 
             image_path = generate_image(image_prompt)
+
+            if image_path is None:
+                print("AI image generation failed.")
+                print("Publishing article without image.")
 
     except Exception as e:
 
@@ -317,9 +320,14 @@ for i, article in enumerate(news, start=1):
     print("=" * 60)
     print("IMAGE PATH")
     print(image_path)
-    print("Exists:", os.path.exists(image_path))
+
+    if image_path and os.path.exists(image_path):
+        print("Exists: True")
+    else:
+        print("No image found. Continuing without image.")
+        image_path = None
+
     print("=" * 60)
-    print(image_path)
     print(tags)
     print("=" * 60)
     print("STARTING WORDPRESS PUBLISH")
@@ -339,16 +347,38 @@ for i, article in enumerate(news, start=1):
 
     print("Calling publisher.publish()...")
 
-    result = publisher.publish(
-        title=seo["title"],
-        content=rewritten,
-        excerpt=seo["meta"],
-        slug=seo["slug"],
-        image_path=image_path,
-        category=category,
-        tags=tags,
-        status="publish"
-    )
+    try:
+
+        result = publisher.publish(
+            title=seo["title"],
+            content=rewritten,
+            excerpt=seo["meta"],
+            slug=seo["slug"],
+            image_path=image_path,
+            category=category,
+            tags=tags,
+            status="publish"
+        )
+
+    except Exception as e:
+
+        print("=" * 60)
+        print("WORDPRESS ERROR")
+        print("=" * 60)
+        print(e)
+
+        print("Publishing without image...")
+
+        result = publisher.publish(
+            title=seo["title"],
+            content=rewritten,
+            excerpt=seo["meta"],
+            slug=seo["slug"],
+            image_path=None,
+            category=category,
+            tags=tags,
+            status="publish"
+        )
 
     print("Publisher Returned:")
     print(result)
