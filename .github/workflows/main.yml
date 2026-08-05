@@ -2,12 +2,16 @@ name: Breaking Bharat AI Automation
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    # Run every 1 hour
+    - cron: '0 * * * *'
+
   workflow_dispatch:
 
 jobs:
   run-news-bot:
     runs-on: ubuntu-latest
+
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Repository
@@ -16,29 +20,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-      
-          echo "===== Current Directory ====="
-          pwd
-      
-          echo "===== Files ====="
-          ls -la
-      
-          echo "===== requirements.txt ====="
-          cat requirements.txt
-      
-          echo "===== Installing ====="
           pip install -r requirements.txt
-      
-          echo "===== Markdown ====="
-          python -m pip show Markdown || true
-      
-          echo "===== Installed Packages ====="
-          python -m pip list
+
       - name: Run Automation
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -48,4 +36,9 @@ jobs:
           WP_USERNAME: ${{ secrets.WP_USERNAME }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
 
-        run: python app.py
+          # Custom Configuration
+          MAX_NEWS_PER_RUN: "8"
+          REQUEST_DELAY: "10"
+
+        run: |
+          python app.py
