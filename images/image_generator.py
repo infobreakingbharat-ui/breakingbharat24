@@ -15,7 +15,9 @@ def generate_image(prompt, filename="featured.jpg"):
 
     url = (
         f"https://image.pollinations.ai/prompt/{quote(prompt)}"
-        "?width=1920&height=1080"
+        "?model=flux"
+        "&width=1920"
+        "&height=1080"
     )
 
     headers = {
