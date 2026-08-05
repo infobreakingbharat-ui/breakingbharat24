@@ -26,6 +26,12 @@ class WordPressPublisher:
     ####################################################
     def upload_image(self, image_path):
 
+        # No image provided
+        if image_path is None:
+            print("No image provided. Skipping upload.")
+            return None
+
+        # Image path does not exist
         if not os.path.exists(image_path):
             print("Image not found.")
             return None
@@ -142,7 +148,12 @@ class WordPressPublisher:
 
     ):
 
-        media_id = self.upload_image(image_path)
+        media_id = None
+
+        if image_path:
+            media_id = self.upload_image(image_path)
+        else:
+            print("Publishing without featured image.")
 
         category_id = self.get_category(category)
 
@@ -153,26 +164,19 @@ class WordPressPublisher:
 
             if tag_id:
                 tag_ids.append(tag_id)
-
         payload = {
-
             "title": title,
-
             "content": content,
-
             "excerpt": excerpt,
-
             "slug": slug,
-
             "status": status,
-
-            "featured_media": media_id,
-
             "categories": [category_id] if category_id else [],
-
             "tags": tag_ids
-
         }
+
+        # Add featured image only if uploaded successfully
+        if media_id:
+            payload["featured_media"] = media_id
 
         response = requests.post(
 
