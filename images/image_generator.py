@@ -1,9 +1,9 @@
 import os
+import time
 import requests
 from urllib.parse import quote
 
 OUTPUT_DIR = "images/output"
-
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
@@ -18,66 +18,48 @@ def generate_image(prompt, filename="featured.jpg"):
         "?width=1920&height=1080"
     )
 
-    print("Image URL:")
-    print(url)
-
     headers = {
         "User-Agent": "BreakingBharatBot/1.0"
     }
 
-    try:
+    MAX_RETRIES = 3
 
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=180
-        )
+    for attempt in range(MAX_RETRIES):
 
-        print("Status Code:", response.status_code)
+        try:
 
-        content_type = response.headers.get("Content-Type")
-        print("Content-Type:", content_type)
+            print(f"Attempt {attempt+1}/{MAX_RETRIES}")
 
-        if response.status_code != 200:
-            print("Image Generation Failed")
-            print(response.text[:1000])
-            return None
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=180
+            )
 
-        if not content_type or "image" not in content_type.lower():
-            print("Response is not an image")
-            print(response.text[:1000])
-            return None
+            print("Status:", response.status_code)
 
-        image_path = os.path.join(OUTPUT_DIR, filename)
+            if response.status_code == 200:
 
-        with open(image_path, "wb") as f:
-            f.write(response.content)
+                image_path = os.path.join(OUTPUT_DIR, filename)
 
-        print("Image Saved Successfully")
-        print("Saved At:", image_path)
+                with open(image_path, "wb") as f:
+                    f.write(response.content)
 
-        return image_path
+                print("Image Saved:", image_path)
 
-    except Exception as e:
-        print("=" * 60)
-        print("IMAGE GENERATION ERROR")
-        print("=" * 60)
-        print(e)
-        return None
+                return image_path
 
-if __name__ == "__main__":
+            else:
 
-    prompt = """
-    Ultra realistic editorial news image,
-    breaking news,
-    dramatic lighting,
-    newspaper featured image,
-    no text,
-    no watermark,
-    4k,
-    photorealistic
-    """
+                print(response.text[:500])
 
-    path = generate_image(prompt)
+        except Exception as e:
 
-    print("Returned Path:", path)
+            print(e)
+
+        print("Retrying in 20 seconds...")
+        time.sleep(20)
+
+    print("Image generation failed.")
+
+    return None
