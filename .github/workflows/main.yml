@@ -3,7 +3,7 @@ name: Breaking Bharat AI Automation
 on:
   schedule:
     # Run every 1 hour
-    - cron: '0 * * * *'
+    - cron: '10 * * * *'
 
   workflow_dispatch:
 
